@@ -35,7 +35,7 @@ jobs:
     - name: Deploy Cloud Function (Gen 1)
       run: |
         gcloud functions deploy add_book_to_firestore \
-          --gen1 \
+          # --gen2 \
           --runtime python311 \
           --trigger-http \
           --allow-unauthenticated \
