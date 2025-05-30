@@ -1,2 +1,2 @@
-'''firebase-admin
-functions-framework'''
+firebase-admin
+functions-framework
