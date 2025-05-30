@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main # 你可以改為你使用的部署分支
-    paths:
-      - 'add_book_function/**' # 只有當這個資料夾變更時才觸發
+    # paths:
+    #   - 'add_book_function/**' # 只有當這個資料夾變更時才觸發
 
 jobs:
   deploy:
