@@ -2,13 +2,14 @@
 Cloud Function to add a new book to Firestore.
 '''
 import functions_framework
-from firebase_admin import credentials, firestore, initialize_app
+import firebase_admin # Added import
+from firebase_admin import credentials, firestore # Removed initialize_app from here
 
 # Initialize Firebase Admin SDK
 # It's recommended to initialize the app once per function instance.
 # For local development, you might need to set GOOGLE_APPLICATION_CREDENTIALS.
-if not initialize_app.get_app_default_instance():
-    initialize_app()
+if not firebase_admin._apps: # Corrected Firebase initialization check
+    firebase_admin.initialize_app() # Corrected Firebase initialization call
 
 db = firestore.client()
 
