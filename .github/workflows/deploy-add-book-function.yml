@@ -1,0 +1,47 @@
+name: Deploy Add Book Cloud Function
+
+on:
+  push:
+    branches:
+      - main # Or your preferred branch
+    paths:
+      - 'add_book_function/**' # Only run if files in this directory change
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write' # Required for Workload Identity Federation
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Google Auth
+      id: auth
+      uses: 'google-github-actions/auth@v2'
+      with:
+        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+        # If using Workload Identity Federation (recommended):
+        # workload_identity_provider: 'projects/YOUR_GCP_PROJECT_NUMBER/locations/global/workloadIdentityPools/YOUR_POOL_ID/providers/YOUR_PROVIDER_ID'
+        # service_account: 'your-service-account-email@your-project-id.iam.gserviceaccount.com'
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+    - name: Deploy Cloud Function
+      run: |
+        gcloud functions deploy add_book_to_firestore \
+          --gen2 \
+          --runtime python311 \
+          --trigger-http \
+          --allow-unauthenticated \
+          --source ./add_book_function \
+          --entry-point add_book_to_firestore \
+          --region us-central1 \
+          --project ${{ secrets.GCP_PROJECT_ID }}
+      env:
+        GCP_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
