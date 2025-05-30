@@ -3,39 +3,39 @@ name: Deploy Add Book Cloud Function
 on:
   push:
     branches:
-      - main # Or your preferred branch
+      - main # 你可以改為你使用的部署分支
     paths:
-      - 'add_book_function/**' # Only run if files in this directory change
+      - 'add_book_function/**' # 只有當這個資料夾變更時才觸發
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
-      id-token: 'write' # Required for Workload Identity Federation
+      id-token: 'write' # 如果你使用 Workload Identity Federation
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Google Auth
+    - name: Authenticate with Google Cloud
       id: auth
       uses: 'google-github-actions/auth@v2'
       with:
         credentials_json: '${{ secrets.GCP_SA_KEY }}'
-        # If using Workload Identity Federation (recommended):
-        # workload_identity_provider: 'projects/YOUR_GCP_PROJECT_NUMBER/locations/global/workloadIdentityPools/YOUR_POOL_ID/providers/YOUR_PROVIDER_ID'
-        # service_account: 'your-service-account-email@your-project-id.iam.gserviceaccount.com'
+        # 如果你改用 Workload Identity Federation，可以取消註解以下兩行並填上資料：
+        # workload_identity_provider: 'projects/YOUR_PROJECT_NUMBER/locations/global/workloadIdentityPools/YOUR_POOL_ID/providers/YOUR_PROVIDER_ID'
+        # service_account: 'your-service-account@your-project-id.iam.gserviceaccount.com'
 
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v2
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Deploy Cloud Function
+    - name: Deploy Cloud Function (Gen 1)
       run: |
         gcloud functions deploy add_book_to_firestore \
-          --gen2 \
+          --gen1 \
           --runtime python311 \
           --trigger-http \
           --allow-unauthenticated \
